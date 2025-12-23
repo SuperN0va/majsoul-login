@@ -1,8 +1,14 @@
 name: Majsoul-Login
+
 on:
   workflow_dispatch:
-  schedule: #5:00
+  schedule: #5:00 UTC (13:00 Beijing) - 注意：原代码的 cron '0 21 * * *' 是 UTC 21点，即北京时间凌晨5点
    - cron: '0 21 * * *'
+
+# 新增：赋予写入仓库的权限，这是 push 代码必须的
+permissions:
+  contents: write
+
 jobs:
   login:
     name: Majsoul-Login
@@ -15,4 +21,25 @@ jobs:
         run: pip install selenium==4.17.2
 
       - name: Majsoul login
+        # 运行 Python 脚本，这步必须生成 log.txt 文件
         run: python login.py ${{ secrets.EMAIL }} ${{ secrets.PASSWD }}
+
+      - name: Commit and Push Log
+        # 仅当上一步成功执行（或即使失败也想记录日志）时运行
+        if: always() 
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # 检查 log.txt 是否存在，不存在则创建（防止报错）
+          touch log.txt
+          
+          # 添加文件
+          git add log.txt
+          
+          # 提交更改。
+          # "|| echo..." 用于防止当 log.txt 没有实质变化时 git commit 报错导致 workflow 失败
+          git commit -m "chore: update login log [skip ci]" || echo "No changes to commit"
+          
+          # 推送回仓库
+          git push
