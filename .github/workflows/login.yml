@@ -18,7 +18,9 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Install Selenium
-        run: pip install selenium==4.17.2
+        run: |
+          sudo apt-get install xvfb
+          pip install selenium==4.17.2
         
       - name: Majsoul login
         # 运行 Python 脚本，这步必须生成 log.txt 文件
