@@ -83,7 +83,12 @@ def run_login():
                 options.add_argument("--headless=new")
                 options.add_argument("--no-sandbox")
                 options.add_argument("--disable-dev-shm-usage")
-                options.add_argument("--disable-gpu")
+                
+                # 移除 --disable-gpu，并显式忽略 GPU 黑名单以支持 WebGL
+                options.add_argument("--ignore-gpu-blocklist")
+                options.add_argument("--use-gl=angle")
+                options.add_argument("--use-angle=swiftshader") # 使用软件渲染 fallback，防止 Action 机器无显卡报错
+                
                 # 伪装 user-agent 降低被墙的概率
                 options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
                 
