@@ -36,7 +36,7 @@ jobs:
           git add log.txt
           git commit -m "chore: update login log [skip ci]" || echo "No changes to commit"
           
-          # 新增这一行：在推送前先拉取并合并远程的最新更改
+          # [新增] 在推送前，先拉取远程最新的代码并合并
           git pull --rebase origin main
           
           # 推送回仓库
