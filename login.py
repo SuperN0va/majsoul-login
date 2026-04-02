@@ -4,10 +4,11 @@ from datetime import datetime
 from time import sleep
 
 from selenium import webdriver
-from selenium.webdriver import ActionChainsa
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
 def write_log(message):
     """辅助函数：写入日志到文件"""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -79,16 +80,17 @@ def run_login():
                 print(f"Account: {email}, Attempt {attempt}/{max_retries}...")
                 
                 options = webdriver.ChromeOptions()
-                # 切换回经典无头模式，--headless=new 在某些 Ubuntu 环境下对 WebGL 软件渲染支持有 Bug
-                options.add_argument("--headless")
+                # 使用较新的无头模式
+                options.add_argument("--headless=new")
                 options.add_argument("--no-sandbox")
                 options.add_argument("--disable-dev-shm-usage")
                 
-                # 强制使用纯软件渲染 WebGL (解决 Actions 环境 Laya3D 报错的终极方案)
-                options.add_argument("--disable-gpu")
-                options.add_argument("--use-gl=swiftshader")
-                options.add_argument("--ignore-gpu-blocklist")
+                # WebGL 核心修复配置 (绝不能加 --disable-gpu)
+                # 强制启用 WebGL 并使用 ANGLE 软件渲染器 (SwiftShader)
                 options.add_argument("--enable-webgl")
+                options.add_argument("--use-gl=angle")
+                options.add_argument("--use-angle=swiftshader")
+                options.add_argument("--ignore-gpu-blocklist")
                 
                 # 伪装 user-agent 降低被墙的概率
                 options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
