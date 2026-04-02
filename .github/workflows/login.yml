@@ -19,31 +19,23 @@ jobs:
 
       - name: Install Selenium
         run: pip install selenium==4.17.2
-
-      - name: 安装系统图形依赖
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y xvfb libosmesa6
+        
       - name: Majsoul login
         # 运行 Python 脚本，这步必须生成 log.txt 文件
         run: python login.py ${{ secrets.EMAIL }} ${{ secrets.PASSWD }}
 
       - name: Commit and Push Log
-        # 仅当上一步成功执行（或即使失败也想记录日志）时运行
         if: always() 
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          # 检查 log.txt 是否存在，不存在则创建（防止报错）
           touch log.txt
-          
-          # 添加文件
           git add log.txt
-          
-          # 提交更改。
-          # "|| echo..." 用于防止当 log.txt 没有实质变化时 git commit 报错导致 workflow 失败
           git commit -m "chore: update login log [skip ci]" || echo "No changes to commit"
+          
+          # 新增这一行：在推送前先拉取并合并远程的最新更改
+          git pull --rebase origin main
           
           # 推送回仓库
           git push
